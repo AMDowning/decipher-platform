@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DECIPHER: Consumer AI Health Harms Platform</title>
+<meta name="description" content="DECIPHER extends CIPHER into a public early warning system for unsafe consumer health AI. Patient-reported harms classified by specialty, tool, and NCC MERP severity.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',sans-serif;color:#1a1a2e;background:#f8f9fa;line-height:1.6}
+h1,h2,h3,h4{font-family:'Montserrat',sans-serif;line-height:1.25}
+a{color:inherit}
+.mx{max-width:1100px;margin:0 auto;padding:0 24px}
+
+.proto-banner{background:repeating-linear-gradient(135deg,#E8712B,#E8712B 10px,#D4621F 10px,#D4621F 20px);padding:14px 24px;text-align:center}
+.proto-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.proto-badge{background:#fff;color:#E8712B;padding:5px 16px;border-radius:5px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;letter-spacing:2px;text-transform:uppercase}
+.proto-text{color:#fff;font-size:15px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
+
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#1B2A4A 60%,#0A2F4A 100%);color:#fff;padding:28px 24px 18px}
+.header h1{font-size:clamp(1.3rem,3vw,1.9rem);font-weight:800;margin:0 0 6px}
+.header p{font-size:14px;opacity:.7;max-width:750px;margin:0;line-height:1.5}
+
+.tabs{background:#fff;border-bottom:1px solid #e0e0e0;position:sticky;top:0;z-index:10}
+.tabs-inner{max-width:1100px;margin:0 auto;display:flex;padding:0 24px;overflow-x:auto}
+.tab-btn{padding:14px 18px;font-size:14px;font-weight:400;color:#5D6D7E;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;font-family:'Montserrat',sans-serif;transition:color .2s}
+.tab-btn.active{font-weight:700;color:#E8712B;border-bottom-color:#E8712B}
+
+.content{max-width:1100px;margin:0 auto;padding:24px 24px 60px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.disclaimer{background:#FDF0E6;border:1px solid rgba(232,113,43,.25);border-radius:8px;padding:10px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.disclaimer span{font-size:18px;flex-shrink:0}
+.disclaimer p{font-size:13px;color:#8B4513;margin:0;line-height:1.5}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
+.stat-card{background:#fff;border-radius:10px;padding:20px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-card .num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800}
+.stat-card .lbl{font-size:13px;color:#5D6D7E;margin-top:4px}
+
+.card{background:#fff;border-radius:10px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:24px}
+.card h3{font-size:15px;font-weight:700;margin-bottom:20px;color:#1B2A4A}
+
+.bar-row{margin-bottom:14px}
+.bar-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.bar-header .name{font-weight:600}
+.bar-header .val{color:#5D6D7E}
+.bar-track{background:#f0f0f0;border-radius:4px;height:22px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1s ease-out}
+
+.sev-grid{display:flex;flex-wrap:wrap;gap:8px}
+.sev-item{padding:8px 14px;border-radius:8px;min-width:95px;text-align:center}
+.sev-item .letter{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px}
+.sev-item .slabel{font-size:11px;font-weight:600}
+.sev-item .scount{font-size:11px;color:#5D6D7E;margin-top:2px}
+
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{padding:6px 14px;border-radius:20px;border:1px solid #d0d0d0;background:#fff;color:#1a1a2e;font-size:13px;cursor:pointer;font-weight:400}
+.pill.active-teal{border:2px solid #0D7377;background:#0D7377;color:#fff;font-weight:700}
+.pill.active-orange{border:2px solid #E8712B;background:#E8712B;color:#fff;font-weight:700}
+
+.report-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:12px;border-left:4px solid #ccc}
+.report-card .tags{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.report-card .tags-left,.report-card .tags-right{display:flex;gap:8px;flex-wrap:wrap}
+.tag{padding:2px 10px;border-radius:4px;font-size:12px;display:inline-block}
+.report-card p{font-size:14px;color:#2C3E50;line-height:1.6;margin:0 0 8px}
+.report-card .meta{font-size:12px;color:#999}
+
+.pattern-card{background:#fff;border-radius:10px;padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid #E8712B}
+.pattern-card h3{font-size:16px;font-weight:700;margin:0 0 12px;color:#1B2A4A}
+.pattern-card p{font-size:14px;color:#5D6D7E;line-height:1.6;margin-bottom:12px}
+
+.form-box{max-width:600px;background:#fff;border-radius:12px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.form-box label{font-size:14px;font-weight:600;display:block;margin-bottom:8px}
+.form-box .field{margin-bottom:20px}
+.form-box .opt-btn{padding:8px 18px;border-radius:8px;border:1px solid #d0d0d0;background:#fff;cursor:pointer;font-size:14px;color:#1a1a2e}
+.form-box textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #d0d0d0;font-size:14px;font-family:'Open Sans',sans-serif;resize:vertical;line-height:1.5}
+.form-box .radio-opt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;border:1px solid #e8e8e8;cursor:pointer;font-size:14px;margin-bottom:6px}
+.submit-btn{width:100%;padding:14px;border-radius:8px;background:#0D7377;color:#fff;font-size:16px;font-weight:700;border:none;cursor:pointer;font-family:'Montserrat',sans-serif}
+.success-box{max-width:600px;background:#E8F8F0;border-radius:12px;padding:32px;text-align:center;border:1px solid rgba(39,174,96,.2)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.three-col{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;margin-bottom:40px;align-items:stretch}
+.arrow-sep{display:flex;align-items:center;justify-content:center;font-size:22px;color:#5D6D7E;padding:0 6px}
+.ext-card{border-radius:10px;overflow:hidden}
+.ext-head{padding:10px 14px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:#fff;text-align:center}
+.ext-body{padding:14px;border-top:none;border-radius:0 0 10px 10px;font-size:14px}
+.ext-body p{margin-bottom:6px;color:#2C3E50}
+.new-tag{display:inline-block;background:#E8712B;color:#fff;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:700;margin-left:6px}
+
+.gap-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:40px}
+.gap-card{border-radius:10px;overflow:hidden}
+.gap-head{padding:12px 14px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:#fff;text-align:center}
+.gap-body{padding:16px;font-size:14px;border-top:none;border-radius:0 0 10px 10px}
+
+.pop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px}
+.pop-card{background:#FDF0E6;border:1px solid rgba(232,113,43,.15);border-top:4px solid #E8712B;border-radius:8px;padding:16px;text-align:center}
+.pop-card h4{font-size:14px;margin-bottom:8px;color:#E8712B}
+.pop-card p{font-size:13px;color:#4a4a6a;margin:0}
+
+.above-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.above-label{color:#fff;padding:10px 16px;border-radius:8px 8px 0 0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px}
+.above-card{background:rgba(255,255,255,.88);border:1px solid rgba(13,115,119,.2);border-top:none;border-radius:0 0 8px 8px;padding:18px}
+.stat-row{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#0D7377}
+
+.waterline{height:14px;background:linear-gradient(90deg,#1A6E96,#2E86C1,#1A6E96,#2E86C1,#1A6E96);position:relative;overflow:hidden}
+.waterline::before{content:'';position:absolute;top:0;left:-100%;width:300%;height:100%;background:repeating-linear-gradient(90deg,transparent 0px,rgba(255,255,255,.15) 40px,transparent 80px);animation:ws 4s linear infinite}
+@keyframes ws{to{transform:translateX(33.33%)}}
+
+.below-surface{background:linear-gradient(180deg,#1A5276,#0A2F4A);border-radius:0 0 16px 16px;padding:28px 28px 32px;color:#fff}
+.big-stat{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;margin-bottom:12px}
+.big-stat .n{font-family:'Montserrat',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;color:#E8712B}
+.big-stat .t{font-size:15px;color:rgba(255,255,255,.85)}
+.no-infra{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;padding:14px 20px;background:rgba(0,0,0,.25);border-radius:8px;border-left:4px solid #E8712B;margin-bottom:18px}
+.ecri-bar{background:rgba(0,0,0,.3);border-radius:6px;padding:12px 20px;font-size:14px;color:#D6EAF8;font-style:italic;text-align:center}
+
+.footer{background:#1a1a2e;color:rgba(255,255,255,.5);text-align:center;padding:36px 24px;font-size:13px;line-height:2}
+.footer .ft{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#fff;margin-bottom:8px}
+.footer a{text-decoration:none}
+.footer a.accent{color:#E8712B}
+.footer a.dim{color:rgba(255,255,255,.7)}
+
+.feedback-bar{text-align:center;padding:20px;background:#FDF0E6;border-radius:10px;margin-top:8px;font-size:13px;color:#E8712B;font-weight:600}
+.open-bar{text-align:center;padding:16px;background:#EBF5FB;border-radius:10px;font-size:13px;color:#1B2A4A}
+
+@media(max-width:768px){
+  .two-col,.above-grid{grid-template-columns:1fr}
+  .three-col{grid-template-columns:1fr;gap:16px}
+  .arrow-sep{transform:rotate(90deg)}
+  .gap-grid{grid-template-columns:1fr}
+  .pop-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){.pop-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="proto-banner"><div class="proto-inner"><span class="proto-badge">Prototype</span><span class="proto-text">DECIPHER Platform — Illustrative Demo with Synthetic Data Only</span></div></div>
+
+<div class="header"><div class="mx"><h1>DECIPHER: Consumer AI Health Harms Platform</h1><p>Extending UC San Diego's ARPA-H-funded CIPHER platform into a public early warning system for unsafe consumer health AI.</p></div></div>
+
+<div class="tabs"><div class="tabs-inner" id="tab-bar"></div></div>
+
+<div class="content" id="content"></div>
+
+<div class="footer">
+  <div class="ft">DECIPHER: An Early Warning System for Unsafe Health AI</div>
+  <p><a href="https://lightcollective.org" target="_blank" class="accent">The Light Collective</a> | <a href="https://cyberhealth.ucsd.edu/research/cipher-platform/index.html" target="_blank" class="accent">UC San Diego Center for Healthcare Cybersecurity</a></p>
+  <p><a href="https://lightcollective.org" target="_blank" class="dim">lightcollective.org</a> | <a href="https://apps.irs.gov/app/eos/detailsPage?ein=841739777&name=The%20Light%20Collective&city=&state=&countryAbbr=US" target="_blank" class="dim">EIN: 84-1739777</a> | <a href="https://cyberhealth.ucsd.edu/research/cipher-platform/index.html" target="_blank" class="dim">cyberhealth.ucsd.edu</a></p>
+  <p><a href="https://www.psoppc.org/psoppc_web/publicpages/commonFormatsOverview" target="_blank" class="dim">AHRQ Common Formats</a> | <a href="https://www.nccmerp.org/types-medication-errors" target="_blank" class="dim">NCC MERP Severity</a> | <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" class="dim">Open-source: CC BY 4.0</a> | <a href="https://github.com/cipherproject/cipherproject.github.io" target="_blank" class="dim">Built on CIPHER (Apache 2.0)</a></p>
+</div>
+
+<script>
+const REPORTS=[{id:1,tool:"ChatGPT",category:"Medication Interactions",severity:"E",summary:"AI recommended combining metformin with a supplement that can cause dangerous blood sugar drops. Patient followed advice before checking with doctor.",date:"2027-01-15",technical:"Drug interaction checking",status:"Verified"},{id:2,tool:"Gemini",category:"Medication Interactions",severity:"F",summary:"Chatbot suggested stopping blood thinner medication abruptly rather than tapering. Patient experienced a blood clot event requiring hospitalization.",date:"2027-01-22",technical:"Medication management",status:"Verified"},{id:3,tool:"ChatGPT",category:"Diagnosis Questions",severity:"D",summary:"AI provided reassurance for symptoms consistent with appendicitis, advising home remedies. Patient delayed ER visit by 12 hours.",date:"2027-02-03",technical:"Symptom assessment",status:"Verified"},{id:4,tool:"Claude",category:"Mental Health",severity:"E",summary:"AI chatbot provided coping strategies that conflicted with patient\u2019s existing therapy plan for PTSD, causing confusion and treatment disruption.",date:"2027-02-10",technical:"Therapeutic guidance",status:"Under Review"},{id:5,tool:"ChatGPT",category:"Medication Interactions",severity:"D",summary:"Recommended a common herbal supplement without flagging known interaction with patient\u2019s immunosuppressant medication for lupus.",date:"2027-02-14",technical:"Drug interaction checking",status:"Verified"},{id:6,tool:"Gemini",category:"Diet & Supplements",severity:"C",summary:"Suggested a high-protein ketogenic diet for a patient with chronic kidney disease stage 3, which could accelerate kidney damage.",date:"2027-02-18",technical:"Dietary guidance",status:"Verified"},{id:7,tool:"ChatGPT",category:"Diagnosis Questions",severity:"E",summary:"Misidentified classic stroke warning signs as migraine symptoms. Patient described facial drooping and arm weakness; AI suggested rest and hydration.",date:"2027-02-25",technical:"Symptom assessment",status:"Verified"},{id:8,tool:"Other",category:"Medication Interactions",severity:"D",summary:"Health-focused AI app recommended doubling the dose of an OTC pain reliever without asking about patient\u2019s liver condition.",date:"2027-03-01",technical:"Dosage guidance",status:"Under Review"},{id:9,tool:"ChatGPT",category:"Mental Health",severity:"D",summary:"Provided detailed information about medication combinations in response to a vulnerable patient expressing hopelessness. No crisis resources offered initially.",date:"2027-03-05",technical:"Crisis response",status:"Verified"},{id:10,tool:"Gemini",category:"Diet & Supplements",severity:"C",summary:"Recommended an elimination diet for a child with suspected food allergies without suggesting medical evaluation first.",date:"2027-03-08",technical:"Dietary guidance",status:"Verified"},{id:11,tool:"ChatGPT",category:"Diagnosis Questions",severity:"D",summary:"Told a diabetic patient that tingling in feet was likely from sitting position, missing classic signs of diabetic neuropathy.",date:"2027-03-12",technical:"Symptom assessment",status:"Verified"},{id:12,tool:"Claude",category:"Medication Interactions",severity:"C",summary:"AI failed to flag that patient\u2019s supplement regimen could reduce the effectiveness of their birth control medication.",date:"2027-03-15",technical:"Drug interaction checking",status:"Under Review"},{id:13,tool:"ChatGPT",category:"Mental Health",severity:"E",summary:"Provided a self-diagnosis of bipolar disorder with management suggestions, potentially delaying proper psychiatric evaluation.",date:"2027-03-18",technical:"Diagnostic suggestion",status:"Verified"},{id:14,tool:"Gemini",category:"Medication Interactions",severity:"F",summary:"Recommended abrupt discontinuation of an SSRI antidepressant. Patient experienced severe discontinuation syndrome requiring ER visit.",date:"2027-03-22",technical:"Medication management",status:"Verified"},{id:15,tool:"ChatGPT",category:"Diet & Supplements",severity:"D",summary:"Suggested high-dose vitamin A supplementation for skin issues without flagging that the patient mentioned they were pregnant.",date:"2027-03-25",technical:"Supplement safety",status:"Verified"},{id:16,tool:"Other",category:"Diagnosis Questions",severity:"C",summary:"Spanish-language AI health tool mistranslated \u2018chest tightness\u2019 as \u2018chest congestion\u2019 and recommended cold medicine instead of cardiac evaluation.",date:"2027-03-28",technical:"Translation accuracy",status:"Verified"},{id:17,tool:"ChatGPT",category:"Medication Interactions",severity:"E",summary:"Caregiver asked about mother\u2019s diabetes medications and AI recommended a supplement known to cause dangerous hypoglycemia when combined with insulin.",date:"2027-04-01",technical:"Drug interaction checking",status:"Verified"},{id:18,tool:"Gemini",category:"Mental Health",severity:"D",summary:"Provided anxiety management techniques contraindicated for patient\u2019s specific trauma history, potentially retraumatizing.",date:"2027-04-05",technical:"Therapeutic guidance",status:"Under Review"}];
+
+const SEVS={A:{l:"No error",c:"#27AE60"},B:{l:"Near miss",c:"#2ECC71"},C:{l:"No harm",c:"#F39C12"},D:{l:"Monitoring",c:"#E67E22"},E:{l:"Temporary harm",c:"#E74C3C"},F:{l:"Hospitalization",c:"#C0392B"},G:{l:"Permanent harm",c:"#8E44AD"},H:{l:"Life-threatening",c:"#6C3483"},I:{l:"Death",c:"#1a1a2e"}};
+const TC={"ChatGPT":"#10A37F","Claude":"#D97757","Gemini":"#4285F4","Other":"#5D6D7E"};
+const CC={"Medication Interactions":"#E8712B","Diagnosis Questions":"#0D7377","Mental Health":"#2E86C1","Diet & Supplements":"#27AE60"};
+
+const TABS=[{id:"iceberg",label:"Overview"},{id:"submit",label:"Submit Report"},{id:"dashboard",label:"Public Dashboard"},{id:"reports",label:"Harm Reports"},{id:"patterns",label:"Pattern Analysis"}];
+let activeTab="iceberg",catF="All",toolF="All",submitted=false;
+
+function count(arr,key){const c={};arr.forEach(r=>{c[r[key]]=(c[r[key]]||0)+1});return c}
+const catCounts=count(REPORTS,"category"),toolCounts=count(REPORTS,"tool");
+const mxC=Math.max(...Object.values(catCounts)),mxT=Math.max(...Object.values(toolCounts));
+
+function disc(){return`<div class="disclaimer"><span>&#9888;&#65039;</span><p><strong>Prototype \u2014 illustrative data only.</strong> All reports, patterns, and statistics shown are synthetic examples created for demonstration purposes. No real patient data is displayed. This prototype shows what the DECIPHER platform will look like when launched.</p></div>`}
+
+function barChart(data,max,colors){return Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="bar-row"><div class="bar-header"><span class="name">${k}</span><span class="val">${v} (${Math.round(v/18*100)}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%;background:${colors[k]||'#5D6D7E'}"></div></div></div>`).join("")}
+
+function tag(text,bg,fg,extra=""){return`<span class="tag" style="background:${bg};color:${fg};${extra}">${text}</span>`}
+
+function renderTabs(){
+  document.getElementById("tab-bar").innerHTML=TABS.map(t=>`<button class="tab-btn${activeTab===t.id?' active':''}" onclick="switchTab('${t.id}')">${t.label}</button>`).join("");
+}
+
+function switchTab(id){activeTab=id;renderTabs();render()}
+
+function render(){
+  const el=document.getElementById("content");
+  if(activeTab==="iceberg") el.innerHTML=renderIceberg();
+  else if(activeTab==="submit") el.innerHTML=renderSubmit();
+  else if(activeTab==="dashboard") el.innerHTML=renderDashboard();
+  else if(activeTab==="reports") el.innerHTML=renderReports();
+  else if(activeTab==="patterns") el.innerHTML=renderPatterns();
+}
+
+function renderIceberg(){return disc()+`
+<div style="text-align:center;margin-bottom:40px">
+  <h2 style="font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:800;margin-bottom:12px;color:#1B2A4A">The Consumer AI Safety <span style="color:#E8712B">Iceberg</span></h2>
+  <p style="font-size:16px;color:#5D6D7E;max-width:740px;margin:0 auto;line-height:1.6">Health systems have safety infrastructure for institutional AI. <strong style="color:#C0392B">No public infrastructure exists for 40 million patients using consumer AI.</strong></p>
+</div>
+<div style="max-width:960px;margin:0 auto 48px">
+  <div style="background:linear-gradient(180deg,#EAF4F8,#D6EAF8);border-radius:16px 16px 0 0;padding:28px 28px 24px">
+    <div class="above-grid">
+      <div>
+        <div class="above-label" style="background:#0D7377">\u25B2 Above the surface: Institutional AI</div>
+        <div class="above-card">
+          <p style="font-size:14px;color:#5D6D7E;margin-bottom:8px">Event reporting, root cause analysis, M&amp;M conferences, risk committees</p>
+          <p style="font-size:14px;color:#0D7377;font-weight:700;margin-bottom:8px">Health systems govern this portion.</p>
+          <p style="font-size:13px;color:#999;font-style:italic">These channels CAN absorb AI-related harms for institutionally deployed tools.</p>
+        </div>
+      </div>
+      <div>
+        <div class="above-label" style="background:#1B2A4A">CIPHER Platform (Validated)</div>
+        <div class="above-card" style="border-color:rgba(27,42,74,.15)">
+          <div class="stat-row"><span class="stat-num">6,059</span><span style="font-size:14px">patient harm reports</span></div>
+          <div class="stat-row"><span class="stat-num">13</span><span style="font-size:14px">clinical specialties</span></div>
+          <div class="stat-row"><span class="stat-num">10+</span><span style="font-size:14px">technical domains</span></div>
+          <span style="display:inline-block;background:#1B2A4A;color:#fff;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:700;margin-top:4px">ARPA-H funded ($9.5M H-R3P)</span>
+          <p style="font-size:12px;color:#999;margin-top:6px">Open-source | DOI: 10.5281/zenodo.17344644</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="waterline"></div>
+  <div class="below-surface">
+    <span style="display:inline-block;background:#C0392B;color:#fff;padding:5px 14px;border-radius:6px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;margin-bottom:18px">\u25BC Below the surface: Consumer AI \u2014 Where DECIPHER builds</span>
+    <div class="big-stat"><span class="n">40 million</span><span class="t">patients use consumer AI for health guidance daily</span></div>
+    <div class="big-stat"><span class="n">67%</span><span class="t">of physicians use consumer AI outside institutional oversight</span></div>
+    <div class="no-infra">No event reporting. No M&amp;M review. No root cause analysis. No public dashboard. No data.</div>
+    <div class="ecri-bar">ECRI: AI chatbot misuse = #1 health technology hazard of 2026 | Underreporting = #5 patient safety concern</div>
+  </div>
+</div>
+<h3 style="font-size:20px;font-weight:700;margin-bottom:20px;color:#1B2A4A">CIPHER \u2192 DECIPHER: Extending Proven Infrastructure</h3>
+<div class="three-col">
+  <div class="ext-card"><div class="ext-head" style="background:#0D7377">CIPHER (Existing)</div><div class="ext-body" style="background:#E8F4F4;border:1px solid #0D737720"><p>Cyberattacks on hospitals</p><p>Literature + social media mining</p><p>6,059 structured reports</p></div></div>
+  <div class="arrow-sep">\u2192</div>
+  <div class="ext-card"><div class="ext-head" style="background:#E8712B">DECIPHER (New)</div><div class="ext-body" style="background:#FDF0E6;border:1px solid #E8712B20"><p>Consumer AI health harms</p><p>Patient self-reporting <span class="new-tag">NEW</span></p><p>Public queryable dashboard</p></div></div>
+  <div class="arrow-sep">\u2192</div>
+  <div class="ext-card"><div class="ext-head" style="background:#1B2A4A">Shared Architecture</div><div class="ext-body" style="background:#EBF5FB;border:1px solid #1B2A4A15"><p>AHRQ Common Formats</p><p>NCC MERP severity (IHI GTT)</p><p>Open-source: CC BY 4.0</p></div></div>
+</div>
+<h3 style="font-size:20px;font-weight:700;margin-bottom:20px;color:#1B2A4A">Why Only Patient-Led Infrastructure Can Fill This Gap</h3>
+<div class="gap-grid">
+  <div class="gap-card"><div class="gap-head" style="background:#C0392B">AI Companies</div><div class="gap-body" style="background:#FDEDEC;border:1px solid #C0392B20;color:#501313">Will not surface their own failures. No incentive for transparency.</div></div>
+  <div class="gap-card"><div class="gap-head" style="background:#C0392B">Regulators</div><div class="gap-body" style="background:#FDEDEC;border:1px solid #C0392B20;color:#501313">FDA lacks jurisdiction over unregulated consumer tools. No AEMS for AI.</div></div>
+  <div class="gap-card"><div class="gap-head" style="background:#27AE60">DECIPHER (Patient-Led)</div><div class="gap-body" style="background:#E8F8F0;border:1px solid #27AE6020;color:#0B3D1E;font-weight:600">Independent, open-source data all parties trust because no party controls it.</div></div>
+</div>
+<h3 style="font-size:20px;font-weight:700;margin-bottom:20px;color:#1B2A4A">Who Is at Risk: Priority Populations</h3>
+<div class="pop-grid">
+  <div class="pop-card"><h4>Chronic Illness</h4><p>Use AI most frequently with highest stakes. Core of TLC\u2019s 36-org network.</p></div>
+  <div class="pop-card"><h4>Limited English Proficiency</h4><p>AI chatbots are often the most accessible source. Errors carry highest risk.</p></div>
+  <div class="pop-card"><h4>People with Disabilities</h4><p>Depend on AI for accessible health communication. WCAG 2.1 AA.</p></div>
+  <div class="pop-card"><h4>Rural &amp; Underinsured</h4><p>Turn to AI as a substitute for care they cannot access.</p></div>
+</div>
+<div style="text-align:center;font-size:12px;color:#999"><strong>Sources:</strong> \u00D6tles et al., NEJM AI 2026;3(4) | ECRI Top 10 Health Tech Hazards 2026 | Perakslis et al., Nature Medicine 2023</div>`}
+
+function renderSubmit(){
+  if(submitted) return disc()+`<div class="success-box"><div style="font-size:40px;margin-bottom:12px">&#10003;</div><h3 style="font-size:18px;font-weight:700;color:#27AE60;margin-bottom:8px">Report submitted</h3><p style="font-size:14px;color:#5D6D7E;margin-bottom:20px">Thank you. Your report will be reviewed and classified using the CIPHER taxonomy.</p><button onclick="submitted=false;switchTab('dashboard')" style="padding:10px 24px;border-radius:8px;background:#0D7377;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer">View Dashboard</button></div>`;
+  return disc()+`<h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Submit a Report</h2>
+<p style="font-size:14px;color:#5D6D7E;margin-bottom:4px">Under 5 minutes | 6th-grade reading level | No medical terms needed</p>
+<p style="font-size:13px;color:#999;margin-bottom:28px">Your report is de-identified and stored on HIPAA-compliant servers. No data is sold or shared with AI companies.</p>
+<div class="form-box">
+  <div style="display:flex;justify-content:space-between;margin-bottom:24px"><span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#0D7377">DECIPHER Report</span><span style="font-size:12px;color:#999">Step 1 of 4</span></div>
+  <div class="field"><label>Which AI tool did you use?</label><div style="display:flex;gap:8px;flex-wrap:wrap">${["ChatGPT","Claude","Gemini","Other"].map(t=>`<button class="opt-btn">${t}</button>`).join("")}</div></div>
+  <div class="field"><label>What did you ask about?</label><div style="display:flex;gap:8px;flex-wrap:wrap">${["Medication","Diagnosis","Symptoms","Diet","Mental Health"].map(t=>`<button class="opt-btn">${t}</button>`).join("")}</div></div>
+  <div class="field"><label>What happened?</label><textarea placeholder="Describe what the AI told you and what went wrong. Use your own words." rows="4"></textarea></div>
+  <div class="field"><label>How serious was it?</label>
+    <label class="radio-opt"><input type="radio" name="sev" style="accent-color:#0D7377"> Minor concern \u2014 I caught the error myself</label>
+    <label class="radio-opt"><input type="radio" name="sev" style="accent-color:#0D7377"> Needed medical help \u2014 I had to see a doctor</label>
+    <label class="radio-opt"><input type="radio" name="sev" style="accent-color:#0D7377"> Emergency \u2014 I went to the ER or was hospitalized</label>
+  </div>
+  <button class="submit-btn" onclick="submitted=true;render()">Submit Report</button>
+  <p style="text-align:center;font-size:12px;color:#999;margin-top:12px">EN | ES | ZH | VI | Phone: available</p>
+</div>`}
+
+function renderDashboard(){return disc()+`
+<div class="stat-grid">
+  <div class="stat-card" style="border-top:4px solid #0D7377"><div class="num" style="color:#0D7377">${REPORTS.length}</div><div class="lbl">Reports Analyzed</div></div>
+  <div class="stat-card" style="border-top:4px solid #1B2A4A"><div class="num" style="color:#1B2A4A">4</div><div class="lbl">Clinical Categories</div></div>
+  <div class="stat-card" style="border-top:4px solid #E8712B"><div class="num" style="color:#E8712B">4</div><div class="lbl">Patterns Detected</div></div>
+  <div class="stat-card" style="border-top:4px solid #27AE60"><div class="num" style="color:#27AE60">2027</div><div class="lbl">Launch Year</div></div>
+</div>
+<div class="two-col">
+  <div class="card"><h3>Reports by clinical category</h3>${barChart(catCounts,mxC,CC)}</div>
+  <div class="card"><h3>Reports by AI tool</h3>${barChart(toolCounts,mxT,TC)}</div>
+</div>
+<div class="card"><h3>NCC MERP severity classification (IHI Global Trigger Tool)</h3><div class="sev-grid">
+  ${Object.entries(SEVS).map(([k,s])=>{const ct=REPORTS.filter(r=>r.severity===k).length;return`<div class="sev-item" style="background:${s.c}15;border:1px solid ${s.c}30"><div class="letter" style="color:${s.c}">${k}</div><div class="slabel" style="color:${s.c}">${s.l}</div><div class="scount">${ct} reports</div></div>`}).join("")}
+</div></div>
+<div class="open-bar"><strong>Open-source</strong> | Queryable | CC BY 4.0 | Modeled on CIPHER Cube | <span style="color:#E8712B;font-weight:600">Extends CIPHER to consumer AI health harms</span></div>`}
+
+function renderReports(){
+  const filtered=REPORTS.filter(r=>(catF==="All"||r.category===catF)&&(toolF==="All"||r.tool===toolF));
+  const cats=["All","Medication Interactions","Diagnosis Questions","Mental Health","Diet & Supplements"];
+  const tools=["All","ChatGPT","Claude","Gemini","Other"];
+  return disc()+`<h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Patient-Reported AI Health Harms</h2>
+<p style="font-size:14px;color:#5D6D7E;margin-bottom:24px;max-width:700px">Browse de-identified reports classified by clinical category, AI tool, severity, and technical domain.</p>
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;align-items:flex-end">
+  <div><label style="font-size:12px;font-weight:600;color:#5D6D7E;display:block;margin-bottom:4px">Clinical category</label><div class="pills">${cats.map(c=>`<button class="pill${catF===c?' active-teal':''}" onclick="catF='${c}';render()">${c}</button>`).join("")}</div></div>
+  <div><label style="font-size:12px;font-weight:600;color:#5D6D7E;display:block;margin-bottom:4px">AI tool</label><div class="pills">${tools.map(t=>`<button class="pill${toolF===t?' active-orange':''}" onclick="toolF='${t}';render()">${t}</button>`).join("")}</div></div>
+</div>
+<p style="font-size:13px;color:#5D6D7E;margin-bottom:16px">Showing <strong>${filtered.length}</strong> of ${REPORTS.length} reports</p>
+${filtered.map(r=>`<div class="report-card" style="border-left-color:${SEVS[r.severity]?.c||'#ccc'}">
+  <div class="tags">
+    <div class="tags-left">
+      ${tag(r.tool,(TC[r.tool]||"#5D6D7E")+"20",TC[r.tool]||"#5D6D7E","font-weight:700")}
+      ${tag(r.category,"#E8F4F4","#0D7377","font-weight:600")}
+      ${tag(r.technical,"#f0f0f0","#5D6D7E")}
+    </div>
+    <div class="tags-right">
+      ${tag("Severity "+r.severity+": "+SEVS[r.severity]?.l,SEVS[r.severity]?.c+"20",SEVS[r.severity]?.c,"font-weight:700")}
+      ${tag(r.status,r.status==="Verified"?"#E8F8F0":"#FDF0E6",r.status==="Verified"?"#27AE60":"#E8712B","font-weight:600;font-size:11px")}
+    </div>
+  </div>
+  <p>${r.summary}</p>
+  <div class="meta">Report #${r.id} | ${r.date}</div>
+</div>`).join("")}`}
+
+function renderPatterns(){
+  const patterns=[
+    {title:"Medication interaction errors cluster in ChatGPT",sev:"High",count:6,desc:"ChatGPT accounts for the majority of medication interaction harm reports, particularly around drug interaction checking and supplement safety. Pattern shows consistent failure to flag known dangerous combinations.",tool:"ChatGPT",cat:"Medication Interactions"},
+    {title:"Symptom triage failures cause delayed emergency care",sev:"High",count:4,desc:"Multiple reports across tools show AI reassuring patients with symptoms requiring emergency evaluation (stroke signs, appendicitis). Average delay to appropriate care: 8+ hours.",tool:"Multiple",cat:"Diagnosis Questions"},
+    {title:"Abrupt medication discontinuation advice",sev:"Critical",count:2,desc:"Both Gemini reports in Medication Interactions involved recommending abrupt discontinuation of medications requiring tapering (blood thinners, SSRIs), resulting in hospitalizations.",tool:"Gemini",cat:"Medication Interactions"},
+    {title:"Mental health guidance conflicts with existing treatment",sev:"Medium",count:3,desc:"AI chatbots providing therapeutic guidance without awareness of patient\u2019s existing treatment plan. Particular risk for PTSD and mood disorder patients.",tool:"Multiple",cat:"Mental Health"},
+  ];
+  const sevColor=s=>s==="Critical"?"#C0392B":s==="High"?"#E8712B":"#F39C12";
+  const sevBg=s=>s==="Critical"?"#FDEDEC":s==="High"?"#FDF0E6":"#FEF9E7";
+  return disc()+`<h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Pattern Analysis</h2>
+<p style="font-size:14px;color:#5D6D7E;margin-bottom:28px;max-width:700px">IHI-adapted pattern detection identifies AI tools and clinical categories showing systematic harm.</p>
+${patterns.map(p=>`<div class="pattern-card" style="border-left-color:${sevColor(p.sev)}">
+  <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+    <h3>${p.title}</h3>
+    <div style="display:flex;gap:8px">
+      ${tag(p.sev+" priority",sevBg(p.sev),sevColor(p.sev),"font-weight:700")}
+      ${tag(p.count+" reports","#f0f0f0","#5D6D7E")}
+    </div>
+  </div>
+  <p>${p.desc}</p>
+  <div style="display:flex;gap:8px">
+    ${tag(p.cat,"#E8F4F4","#0D7377","font-weight:600")}
+    ${tag("Tool: "+p.tool,"#EBF5FB","#1B2A4A")}
+  </div>
+</div>`).join("")}
+<div class="feedback-bar">Feedback loop: AI tools flagged on the dashboard are tracked for declining report rates over time</div>`}
+
+renderTabs();render();
+</script>
+</body>
+</html>
